@@ -39,9 +39,13 @@ namespace FilmesApi.Controllers
 
 
         [HttpGet]
-        public IEnumerable<ReadFilmeDto> RetornarFilmes([FromQuery] int skip = 0, [FromQuery] int take = 20)
+        public IEnumerable<ReadFilmeDto> RetornarFilmes([FromQuery] int skip = 0, [FromQuery] int take = 20, [FromQuery] string? nomeCinema = null)
         {
-            return _mapper.Map<List<ReadFilmeDto>>(_context.Filmes.Skip(skip).Take(take));  // skip e take -> paginação, origem rota após "?"
+            if (nomeCinema == null)
+            {
+                return _mapper.Map<List<ReadFilmeDto>>(_context.Filmes.Skip(skip).Take(take).ToList());  // skip e take -> paginação, origem rota após "?"
+            }
+            return _mapper.Map<List<ReadFilmeDto>>(_context.Filmes.Skip(skip).Take(take).Where(filme => filme.Sessoes.Any(sessao => sessao.Cinema.Nome == nomeCinema)).ToList());
         }
 
 
